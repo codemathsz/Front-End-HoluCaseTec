@@ -1,9 +1,9 @@
-import { Form } from "../components/Form";
+import { Form } from '../components/Form'
 
 export function Home() {
   return (
     <div>
-      <Form/>
+      <Form />
     </div>
   )
 }

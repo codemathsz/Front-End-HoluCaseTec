@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Container, Title } from './styles'
-import { API } from '../../lib/axios'
 import { Result } from '../Result'
 import { handleKeyDown } from '../../utils/keydown'
+import { collection, addDoc, getFirestore } from 'firebase/firestore'
+import { app } from '../../config/firebase'
 
 interface ResultProps {
   amountPlates: number
@@ -17,14 +18,44 @@ export function Form() {
   const [number, setNumber] = useState('')
   const [result, setResult] = useState<ResultProps>()
   const [disabled, setDisabled] = useState(true)
+  const db = getFirestore(app)
 
-  async function handlerSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  function calcular(number: any) {
+    const structureType = 'Laje'
+    const potential = 550 // watts
+    const dimensions = { length: 1.95, width: 1.1 }
+
+    const totalPotentialWatts = number * 1000 // convertendo
+    const amountPlates = Math.round(totalPotentialWatts / potential)
+    const inverters = Math.round(amountPlates / 4) // 1 inversor par 4 placas
+    const lengthOfStructure = amountPlates * dimensions.length
+    const usefulArea = amountPlates * (dimensions.length * dimensions.width)
+
+    return {
+      amountPlates,
+      inverters,
+      potential,
+      lengthOfStructure,
+      usefulArea,
+      structureType,
+    }
+  }
+  async function handlerSubmit() {
+    console.log(result)
+
     try {
-      const response = await API.post('/', { value: number })
-      setResult(response.data)
-    } catch (error) {
-      console.error('Erro:', error)
+      const docRef = await addDoc(collection(db, 'calculo'), {
+        inverters: result?.inverters,
+        amountPlates: result?.amountPlates,
+        potential: result?.potential,
+        lengthOfStructure: result?.lengthOfStructure,
+        usefulArea: result?.usefulArea,
+        structureType: result?.structureType,
+      })
+
+      console.log('Documento escrito  com ID: ', docRef.id)
+    } catch (e) {
+      console.error('Error adding document: ', e)
     }
 
     setNumber('')
@@ -34,10 +65,14 @@ export function Form() {
     setDisabled(!number)
   }, [number])
 
+  useEffect(() => {
+    handlerSubmit()
+  }, [result])
+
   return (
     <Container>
       <Title>Calculadora Holu</Title>
-      <form onSubmit={handlerSubmit}>
+      <form>
         <input
           type="number"
           placeholder="Insira a potência total"
@@ -48,7 +83,11 @@ export function Form() {
           required
         />
 
-        <button type="submit" disabled={disabled}>
+        <button
+          onClick={() => setResult(calcular(number))}
+          type="button"
+          disabled={disabled}
+        >
           Enviar
         </button>
       </form>

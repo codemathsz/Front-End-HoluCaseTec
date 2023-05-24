@@ -31,7 +31,7 @@ export const Container = styled.div`
     }
   }
 
-  button[type='submit'] {
+  button[type='button'] {
     width: 50%;
     height: 4rem;
     border: 0;
