@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, ChangeEvent } from 'react'
 import { Container, Title } from './styles'
 import { Result } from '../Result'
 import { handleKeyDown } from '../../utils/keydown'
@@ -40,6 +40,7 @@ export function Form() {
       structureType,
     }
   }
+
   async function handlerSubmit() {
     console.log(result)
 
@@ -61,6 +62,14 @@ export function Form() {
     setNumber('')
   }
 
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value
+
+    if (value === '' || parseFloat(value) >= 0) {
+      setNumber(value)
+    }
+  }
+
   useEffect(() => {
     setDisabled(!number)
   }, [number])
@@ -78,7 +87,7 @@ export function Form() {
           placeholder="Insira a potência total"
           step="any"
           value={number}
-          onChange={(e) => setNumber(e.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           required
         />
