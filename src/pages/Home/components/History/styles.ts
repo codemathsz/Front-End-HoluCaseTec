@@ -3,7 +3,7 @@ import { styled } from 'styled-components'
 export const ContainerList = styled.div`
   width: 90%;
   margin: 0 auto;
-  margin: 2rem;
+  margin-top: 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -23,10 +23,19 @@ export const MessageEmpty = styled.div`
 
 export const ListHistory = styled.ul`
   width: 100%;
+  margin: 0 auto;
   background-color: ${(props) => props.theme['gray-900']};
   display: flex;
   justify-content: space-around;
   padding: 1.5rem 0;
   list-style: none;
   cursor: pointer;
+
+  @media screen and (max-width: 480px) {
+    & {
+      flex-direction: column;
+      gap: 1rem;
+      border-radius: 6px;
+    }
+  }
 `

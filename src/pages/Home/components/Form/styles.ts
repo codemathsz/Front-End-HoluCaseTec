@@ -117,6 +117,7 @@ export const Container = styled.div`
   @media screen and (max-width: 480px) {
     & {
       padding: 0.5rem;
+      width: 90vw;
     }
     form {
       width: 90vw;
