@@ -1,9 +1,11 @@
 import { useEffect, useState, ChangeEvent } from 'react'
-import { Container, Title } from './styles'
+import { Container, HeaderConatiner, NavHeader, Title } from './styles'
 import { Result } from '../Result'
-import { handleKeyDown } from '../../utils/keydown'
+import { handleKeyDown } from '../../../../utils/keydown'
 import { collection, addDoc, getFirestore } from 'firebase/firestore'
-import { app } from '../../config/firebase'
+import { app } from '../../../../config/firebase'
+import { ArrowLeft, Scroll } from 'phosphor-react'
+import { History } from '../History'
 
 interface ResultProps {
   amountPlates: number
@@ -18,6 +20,7 @@ export function Form() {
   const [number, setNumber] = useState('')
   const [result, setResult] = useState<ResultProps>()
   const [disabled, setDisabled] = useState(true)
+  const [presentForm, setPresentForm] = useState(true)
   const db = getFirestore(app)
 
   function calcular(number: any) {
@@ -28,8 +31,13 @@ export function Form() {
     const totalPotentialWatts = number * 1000 // convertendo
     const amountPlates = Math.round(totalPotentialWatts / potential)
     const inverters = Math.round(amountPlates / 4) // 1 inversor par 4 placas
-    const lengthOfStructure = amountPlates * dimensions.length
-    const usefulArea = amountPlates * (dimensions.length * dimensions.width)
+
+    // mutiplicando e depois dividindo por 100 para ficar com duas casas decimais
+    const lengthOfStructure =
+      Math.round(amountPlates * dimensions.length * 100) / 100
+    const usefulArea =
+      Math.round(amountPlates * (dimensions.length * dimensions.width) * 100) /
+      100
 
     return {
       amountPlates,
@@ -65,7 +73,7 @@ export function Form() {
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
 
-    if (value === '' || parseFloat(value) >= 0) {
+    if (value === '' || parseFloat(value) > 0) {
       setNumber(value)
     }
   }
@@ -76,31 +84,53 @@ export function Form() {
 
   useEffect(() => {
     handlerSubmit()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result])
 
   return (
     <Container>
-      <Title>Calculadora Holu</Title>
-      <form>
-        <input
-          type="number"
-          placeholder="Insira a potência total"
-          step="any"
-          value={number}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          required
-        />
+      <HeaderConatiner>
+        {presentForm === true ? (
+          <Title>Calculadora Holu</Title>
+        ) : (
+          <Title>Histórico</Title>
+        )}
+        <NavHeader>
+          {presentForm === true ? (
+            <a onClick={() => setPresentForm(false)} title="Histórico">
+              <Scroll size={24} />
+            </a>
+          ) : (
+            <a onClick={() => setPresentForm(true)} title="Voltar">
+              <ArrowLeft size={24} />
+            </a>
+          )}
+        </NavHeader>
+      </HeaderConatiner>
+      {presentForm === true ? (
+        <form>
+          <input
+            type="number"
+            placeholder="Insira a potência total"
+            step="any"
+            value={number}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            required
+          />
 
-        <button
-          onClick={() => setResult(calcular(number))}
-          type="button"
-          disabled={disabled}
-        >
-          Enviar
-        </button>
-      </form>
-      {result && <Result result={result} />}
+          <button
+            onClick={() => setResult(calcular(number))}
+            type="button"
+            disabled={disabled}
+          >
+            Enviar
+          </button>
+        </form>
+      ) : (
+        <History />
+      )}
+      {result && presentForm === true && <Result result={result} />}
     </Container>
   )
 }

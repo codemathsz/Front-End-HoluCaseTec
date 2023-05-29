@@ -1,7 +1,49 @@
 import { styled } from 'styled-components'
 
+export const HeaderConatiner = styled.header`
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+`
+
+export const Title = styled.p`
+  color: ${(props) => props.theme['gray-800']};
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0 auto;
+`
+
+export const NavHeader = styled.nav`
+  display: flex;
+  gap: 0.5rem;
+
+  a {
+    width: 2rem;
+    height: 2rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: ${(props) => props.theme['gray-800']};
+
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+
+    &:hover {
+      border-bottom: 3px solid ${(props) => props.theme['green-500']};
+      color: ${(props) => props.theme['green-500']};
+    }
+  }
+`
+
 export const Container = styled.div`
   min-width: 40vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   margin: 0 auto;
   border-radius: 6px;
   position: absolute;
@@ -9,17 +51,20 @@ export const Container = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   background: ${(props) => props.theme['gray-300']};
-  padding: 1rem 2.5rem;
+  padding: 1rem;
   text-align: center;
 
   form {
     margin-top: 2rem;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: 1rem;
   }
 
   input {
+    width: 90%;
     border-radius: 6px;
     border: 0;
     background: ${(props) => props.theme['gray-900']};
@@ -83,11 +128,4 @@ export const Container = styled.div`
       width: 95vw;
     }
   }
-`
-
-export const Title = styled.p`
-  color: ${(props) => props.theme['gray-800']};
-  font-size: 1.5rem;
-  font-weight: bold;
-  text-transform: uppercase;
 `
